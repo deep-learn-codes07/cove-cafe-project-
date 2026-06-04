@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0f" />
+<title>Admin — Cove cafe</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
+<link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="admin-page">
+<div class="bg-grain" aria-hidden="true"></div>
+
+<header class="nav glass">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark"><img src="./assets/logo/logo.svg" alt="Cove cafe logo" /></span><span class="brand-name">Cove <em>Admin</em></span>
+  </a>
+  <nav>
+    <button id="logoutBtn" class="btn btn-ghost" hidden><i class="i-log-out"></i> Logout</button>
+  </nav>
+</header>
+
+<!-- Login -->
+<section id="loginSection" class="auth-wrap">
+  <div class="auth-card glass">
+    <h1>Admin Sign In</h1>
+    <p class="muted">Restricted — staff only.</p>
+    <form id="loginForm" class="form">
+      <label>Email<input type="email" id="email" required/></label>
+      <label>Password<input type="password" id="password" required/></label>
+      <button class="btn btn-primary" type="submit">Sign in</button>
+      <p id="loginErr" class="err" hidden></p>
+    </form>
+  </div>
+</section>
+
+<!-- Dashboard -->
+<section id="dashboard" class="admin-wrap" hidden>
+  <div class="admin-grid">
+    <aside class="glass panel">
+      <h3>Categories</h3>
+      <form id="catForm" class="form inline">
+        <input id="catName" placeholder="Name" required/>
+        <input id="catIcon" placeholder="Icon (e.g. coffee)" />
+        <input id="catOrder" type="number" placeholder="Order" value="0"/>
+        <button class="btn btn-primary" type="submit"><i class="i-plus"></i></button>
+      </form>
+      <ul id="catList" class="cat-list"></ul>
+    </aside>
+
+    <section class="glass panel">
+      <div class="row-between">
+        <h3>Menu Items</h3>
+        <button id="newItemBtn" class="btn btn-primary"><i class="i-plus"></i> New item</button>
+      </div>
+      <input id="adminSearch" class="input" placeholder="Search items…"/>
+      <div id="adminItems" class="admin-items"></div>
+    </section>
+  </div>
+</section>
+
+<!-- Item editor -->
+<div id="itemEditor" class="modal" hidden>
+  <div class="modal-card glass">
+    <button class="modal-close" data-close aria-label="Close"><i class="i-x"></i></button>
+    <h3 id="editorTitle">New Item</h3>
+    <form id="itemForm" class="form">
+      <input type="hidden" id="itemId"/>
+      <label>Name<input id="itemName" required/></label>
+      <label>Category
+        <select id="itemCategory" required></select>
+      </label>
+      <label>Price
+        <input id="itemPrice" type="number" step="0.01" required/>
+      </label>
+      <label>Description<textarea id="itemDesc" rows="2"></textarea></label>
+      <label>Ingredients<textarea id="itemIngredients" rows="2"></textarea></label>
+      <label>Allergens<input id="itemAllergens" placeholder="e.g. Dairy, Nuts"/></label>
+      <label>Image
+        <input id="itemImage" type="file" accept="image/*"/>
+        <small class="muted" id="currentImg"></small>
+      </label>
+      <div class="row gap">
+        <label class="check"><input id="itemVeg" type="checkbox"/> Vegetarian</label>
+        <label class="check"><input id="itemBest" type="checkbox"/> Bestseller</label>
+        <label class="check"><input id="itemAvail" type="checkbox" checked/> Available</label>
+      </div>
+      <div class="row gap end">
+        <button id="deleteBtn" type="button" class="btn btn-ghost danger" hidden><i class="i-trash"></i> Delete</button>
+        <button class="btn btn-primary" type="submit">Save</button>
+      </div>
+      <p id="itemErr" class="err" hidden></p>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="./js/supabase.js"></script>
+<script type="module" src="./js/admin.js"></script>
+</body>
+</html>

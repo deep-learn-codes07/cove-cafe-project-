@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0f" />
+<title>Sign Up — Cove cafe</title>
+<meta name="description" content="Sign up for Cove cafe with Google, email, phone number, and full name." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
+<link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="auth-page">
+<div class="bg-grain" aria-hidden="true"></div>
+<header class="nav glass">
+  <link rel="canonical" href="/menu.html" />
+
+  <a class="brand" href="./index.html">
+    <span class="brand-mark"><img src="./assets/logo/logo.svg" alt="Cove cafe logo" /></span>
+    <span class="brand-name">Cove <em>cafe</em></span>
+  </a>
+  <nav>
+    <a href="./signin.html" class="btn btn-ghost">Sign in</a>
+  </nav>
+</header>
+
+<section class="auth-wrap">
+  <div class="auth-card glass">
+    <h1>Create account</h1>
+    <p class="muted">Sign up with Google or your email address.</p>
+
+    <button id="googleSignUp" class="btn btn-outline" type="button">
+      <i class="i-github"></i> Continue with Google
+    </button>
+
+    <div class="divider"><span>or</span></div>
+
+    <form id="signUpForm" class="form">
+      <label>Full name<input type="text" id="signUpName" placeholder="Jane Doe" required/></label>
+      <label>Email<input type="email" id="signUpEmail" placeholder="you@example.com" required/></label>
+      <label>Password<input type="password" id="signUpPassword" placeholder="••••••••" required/></label>
+      <label>Phone number<input type="tel" id="signUpPhone" placeholder="+91 98765 43210" pattern="\+\d{10,15}"/></label>
+      <button class="btn btn-primary" type="submit">Create account</button>
+    </form>
+
+    <p class="muted">Already have an account? <a href="./signin.html">Sign in</a>.</p>
+    <p id="authErr" class="err" hidden></p>
+    <p id="authInfo" class="muted" hidden></p>
+  </div>
+</section>
+
+<script type="module" src="./js/auth.js"></script>
+</body>
+</html>

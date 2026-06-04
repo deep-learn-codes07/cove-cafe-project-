@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0f" />
+<title>Menu — Cove cafe</title>
+<meta name="description" content="Full menu — coffee, tea, cold beverages, mocktails, desserts, burgers, pizza, pasta, sandwiches and snacks." />
+<link rel="canonical" href="/menu.html" />
+<meta property="og:title" content="Menu — Cove cafe" />
+<meta property="og:description" content="Browse our complete cafe menu with photos, descriptions and prices." />
+<meta property="og:image" content="/assets/og-cover.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
+<link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="menu-page">
+<div class="bg-grain" aria-hidden="true"></div>
+<div class="bg-orb orb-a" aria-hidden="true"></div>
+<div class="bg-orb orb-b" aria-hidden="true"></div>
+
+<header class="nav glass">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark"><img src="./assets/logo/logo.svg" alt="Cove cafe logo" /></span>
+    <span class="brand-name">Cove <em>cafe</em></span>
+  </a>
+  <nav>
+    <a href="./index.html" class="btn btn-ghost"><i class="i-arrow-left"></i> Home</a>
+  </nav>
+</header>
+
+<section class="menu-banner">
+  <div class="banner-inner">
+    <h1 class="display">The Menu</h1>
+    <p class="tagline">Tap any dish to see ingredients and allergens.</p>
+    <div class="search-wrap glass">
+      <i class="i-search"></i>
+      <input id="searchInput" type="search" placeholder="Search by name, category, description…" autocomplete="off"/>
+      <button id="clearSearch" hidden aria-label="Clear"><i class="i-x"></i></button>
+    </div>
+  </div>
+</section>
+
+<div class="cat-tabs-wrap">
+  <div id="catTabs" class="cat-tabs"></div>
+</div>
+
+<main id="menuMain" class="menu-main">
+  <div class="skeleton-grid">
+    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+    <div class="skeleton-card"></div><div class="skeleton-card"></div>
+  </div>
+</main>
+
+<div class="fab-stack">
+  <a class="fab fab-wa" href="https://wa.me/+917219826169?text=Hi%20Cove%20cafe%2C%20I%27d%20like%20to%20order" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><i class="i-message-circle"></i></a>
+</div>
+
+<!-- Item modal -->
+<div id="itemModal" class="modal" hidden>
+  <div class="modal-card glass item-modal">
+    <button class="modal-close" data-close aria-label="Close"><i class="i-x"></i></button>
+    <div class="item-hero">
+      <img id="mImg" alt="" loading="lazy"/>
+    </div>
+    <div class="item-body">
+      <div class="row-between">
+        <h3 id="mName"></h3>
+        <span id="mPrice" class="price"></span>
+      </div>
+      <div id="mBadges" class="badges"></div>
+      <p id="mDesc" class="muted"></p>
+      <div class="kv"><span>Ingredients</span><p id="mIng"></p></div>
+      <div class="kv"><span>Allergens</span><p id="mAll"></p></div>
+      <div class="item-cta">
+        <a id="mOrder" class="btn btn-primary" target="_blank" rel="noopener"><i class="i-message-circle"></i> Order on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="foot"><p>© <span id="yr"></span> Cove cafe</p></footer>
+
+<script type="module" src="./js/supabase.js"></script>
+<script type="module" src="./js/menu.js"></script>
+</body>
+</html>

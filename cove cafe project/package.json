@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.107.0",
+    "aos": "^2.3.4",
+    "firebase": "^12.14.0",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "prisma": "^7.8.0"
+  }
+}
