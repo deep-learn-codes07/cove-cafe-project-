@@ -5,7 +5,7 @@ const loginSection = $("#loginSection");
 const dashboard = $("#dashboard");
 const logoutBtn = $("#logoutBtn");
 
-let cats = [], items = [];
+let cats = [], subcats = [], items = [];
 
 // --- Auth ---
 async function refreshAuth() {
@@ -39,12 +39,13 @@ refreshAuth();
 
 // --- Data ---
 async function loadAll() {
-  const [{ data: c }, { data: i }] = await Promise.all([
+  const [{ data: c }, { data: s }, { data: i }] = await Promise.all([
     supabase.from("categories").select("*").order("display_order"),
+    supabase.from("subcategories").select("*").order("display_order"),
     supabase.from("menu_items").select("*").order("created_at", { ascending: false })
   ]);
-  cats = c ?? []; items = i ?? [];
-  renderCats(); renderItems();
+  cats = c ?? []; subcats = s ?? []; items = i ?? [];
+  renderCats(); renderSubcats(); renderItems();
 }
 
 // --- Categories ---
@@ -52,31 +53,65 @@ function renderCats() {
   const ul = $("#catList"); ul.innerHTML = "";
   cats.forEach(c => {
     const li = document.createElement("li");
-    li.innerHTML = `<span>${escapeHtml(c.icon ?? "•")} ${escapeHtml(c.name)} <small class="muted">#${c.display_order}</small></span>
+    li.innerHTML = `<span>${escapeHtml(c.name)} <small class="muted">#${c.display_order}</small></span>
       <button data-del="${c.id}" aria-label="Delete">✕</button>`;
     ul.appendChild(li);
   });
   ul.onclick = async e => {
     const id = e.target.dataset?.del;
     if (!id) return;
-    if (!confirm("Delete this category? Items will keep referencing it.")) return;
+    if (!confirm("Delete this category? Subcategories will keep referencing it.")) return;
     const { error } = await supabase.from("categories").delete().eq("id", id);
     if (error) alert(error.message); else loadAll();
   };
 
-  // refresh select
-  const sel = $("#itemCategory");
-  sel.innerHTML = cats.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  // refresh select for subcategories
+  const sel = $("#subcatCategory");
+  sel.innerHTML = `<option value="">Select Category</option>` + cats.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
 }
 
 $("#catForm").addEventListener("submit", async e => {
   e.preventDefault();
   const payload = {
     name: $("#catName").value.trim(),
-    icon: $("#catIcon").value.trim() || null,
+    image_url: $("#catImageUrl").value.trim() || null,
     display_order: Number($("#catOrder").value || 0)
   };
   const { error } = await supabase.from("categories").insert(payload);
+  if (error) return alert(error.message);
+  e.target.reset(); loadAll();
+});
+
+// --- Subcategories ---
+function renderSubcats() {
+  const ul = $("#subcatList"); ul.innerHTML = "";
+  subcats.forEach(s => {
+    const catName = cats.find(c => c.id === s.category_id)?.name || "Unknown";
+    const li = document.createElement("li");
+    li.innerHTML = `<span>${escapeHtml(s.name)} <small class="muted">${escapeHtml(catName)} • #${s.display_order}</small></span>
+      <button data-del="${s.id}" aria-label="Delete">✕</button>`;
+    ul.appendChild(li);
+  });
+  ul.onclick = async e => {
+    const id = e.target.dataset?.del;
+    if (!id) return;
+    if (!confirm("Delete this subcategory? Menu items will keep referencing it.")) return;
+    const { error } = await supabase.from("subcategories").delete().eq("id", id);
+    if (error) alert(error.message); else loadAll();
+  };
+}
+
+$("#subcatForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const catId = $("#subcatCategory").value.trim();
+  if (!catId) return alert("Please select a category");
+  const payload = {
+    category_id: catId,
+    name: $("#subcatName").value.trim(),
+    image_url: $("#subcatImageUrl").value.trim() || null,
+    display_order: Number($("#subcatOrder").value || 0)
+  };
+  const { error } = await supabase.from("subcategories").insert(payload);
   if (error) return alert(error.message);
   e.target.reset(); loadAll();
 });
@@ -110,7 +145,7 @@ function openItemEditor(item) {
   $("#editorTitle").textContent = item ? "Edit Item" : "New Item";
   $("#itemId").value = item?.id ?? "";
   $("#itemName").value = item?.name ?? "";
-  $("#itemCategory").value = item?.category_id ?? (cats[0]?.id ?? "");
+  $("#itemSubcategory").value = item?.subcategory_id ?? (subcats[0]?.id ?? "");
   $("#itemPrice").value = item?.price ?? "";
   $("#itemDesc").value = item?.description ?? "";
   $("#itemIngredients").value = item?.ingredients ?? "";
@@ -122,6 +157,15 @@ function openItemEditor(item) {
   $("#itemImage").value = "";
   $("#deleteBtn").hidden = !item;
   $("#itemErr").hidden = true;
+  
+  // Populate subcategory select
+  const sel = $("#itemSubcategory");
+  sel.innerHTML = subcats.map(s => {
+    const catName = cats.find(c => c.id === s.category_id)?.name || "Unknown";
+    return `<option value="${s.id}">${escapeHtml(catName)} > ${escapeHtml(s.name)}</option>`;
+  }).join("");
+  if (item) sel.value = item.subcategory_id;
+  
   openModal("itemEditor");
 }
 
@@ -134,7 +178,7 @@ $("#itemForm").addEventListener("submit", async e => {
   try {
     const payload = {
       name: $("#itemName").value.trim(),
-      category_id: $("#itemCategory").value,
+      subcategory_id: $("#itemSubcategory").value,
       price: Number($("#itemPrice").value),
       description: $("#itemDesc").value.trim() || null,
       ingredients: $("#itemIngredients").value.trim() || null,
@@ -145,7 +189,10 @@ $("#itemForm").addEventListener("submit", async e => {
     };
 
     if (file) {
-      const catSlug = (cats.find(c => c.id === payload.category_id)?.name || "misc").toLowerCase().replace(/\s+/g, "-");
+      const subcatId = payload.subcategory_id;
+      const subcat = subcats.find(s => s.id === subcatId);
+      const catId = subcat?.category_id;
+      const catSlug = (cats.find(c => c.id === catId)?.name || "misc").toLowerCase().replace(/\s+/g, "-");
       const ext = file.name.split(".").pop();
       const path = `${catSlug}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
       const { error: upErr } = await supabase.storage.from(CAFE.storageBucket).upload(path, file, { upsert: false });

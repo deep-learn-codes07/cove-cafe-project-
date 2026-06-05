@@ -1,103 +1,248 @@
-import { fetchCategories, fetchMenuItems, publicImageUrl, CAFE } from "./supabase.js";
-import { $, $$, setYear, renderCard, openModal, closeModal, escapeHtml, formatPrice } from "./ui.js";
+import { fetchCategories, fetchSubcategories, fetchMenuItems, publicImageUrl, CAFE } from "./supabase.js";
+import { $, $$, setYear, renderCard, openModal, escapeHtml, formatPrice } from "./ui.js";
+import { requireMenuAuth } from "./auth-gate.js";
 
 setYear();
 
+const session = await requireMenuAuth();
+
 const state = {
-  cats: [],
-  items: [],
-  active: "all",
+  view: "categories", // categories, subcategories, menu
+  categories: [],
+  subcategories: [],
+  menuItems: [],
+  selectedCategoryId: null,
+  selectedSubcategoryId: null,
   query: ""
 };
 
 const main = $("#menuMain");
-const tabs = $("#catTabs");
 const search = $("#searchInput");
 const clearBtn = $("#clearSearch");
+const breadcrumb = $("#breadcrumb") || createBreadcrumb();
 
-(async function init() {
+if (session) {
+  init();
+}
+
+function createBreadcrumb() {
+  const div = document.createElement("div");
+  div.id = "breadcrumb";
+  div.className = "breadcrumb";
+  div.hidden = true;
+  main.parentElement.insertBefore(div, main);
+  return div;
+}
+
+async function init() {
   try {
-    const [cats, items] = await Promise.all([fetchCategories(), fetchMenuItems()]);
-    state.cats = cats; state.items = items;
-    renderTabs(); renderMenu();
-    // Deep-link to item via hash (#item-<id>)
-    if (location.hash.startsWith("#item-")) {
-      const id = location.hash.slice(6);
-      const it = items.find(i => String(i.id) === id);
-      if (it) showItem(it);
-    }
+    showSkeletons(4);
+    state.categories = await fetchCategories();
+    renderCategories();
   } catch (e) {
     console.error(e);
-    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">Couldn't load menu. Make sure Supabase is configured in <code>js/supabase.js</code>.</p>`;
+    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">Couldn't load menu. Make sure Supabase is configured.</p>`;
   }
-})();
-
-function renderTabs() {
-  tabs.innerHTML = "";
-  const all = tabBtn("all", "All", "✦");
-  tabs.appendChild(all);
-  state.cats.forEach(c => tabs.appendChild(tabBtn(c.id, c.name, c.icon)));
-  tabs.addEventListener("click", e => {
-    const b = e.target.closest(".cat-tab");
-    if (!b) return;
-    state.active = b.dataset.id;
-    $$(".cat-tab", tabs).forEach(t => t.classList.toggle("active", t === b));
-    renderMenu(true);
-  });
 }
 
-function tabBtn(id, name, icon) {
-  const b = document.createElement("button");
-  b.className = "cat-tab" + (state.active === id ? " active" : "");
-  b.dataset.id = id;
-  b.innerHTML = `<span>${icon ? escapeHtml(icon) + " " : ""}</span>${escapeHtml(name)}`;
-  return b;
-}
-
-function filterItems() {
-  const q = state.query.trim().toLowerCase();
-  return state.items.filter(i => {
-    if (state.active !== "all" && String(i.category_id) !== String(state.active)) return false;
-    if (!q) return true;
-    const catName = state.cats.find(c => c.id === i.category_id)?.name?.toLowerCase() ?? "";
-    return [i.name, i.description, catName].some(v => (v ?? "").toLowerCase().includes(q));
-  });
-}
-
-function renderMenu(scroll = false) {
-  const items = filterItems();
+function showSkeletons(count = 4) {
   main.innerHTML = "";
-  if (!items.length) {
+  const grid = document.createElement("div");
+  grid.className = "skeleton-grid";
+  for (let i = 0; i < count; i++) {
+    const card = document.createElement("div");
+    card.className = "skeleton-card";
+    grid.appendChild(card);
+  }
+  main.appendChild(grid);
+}
+
+function renderBreadcrumb() {
+  const crumbs = [];
+  crumbs.push(`<button class="crumb" data-action="back-to-categories">Menu</button>`);
+  
+  if (state.view === "subcategories" && state.selectedCategoryId) {
+    const cat = state.categories.find(c => c.id === state.selectedCategoryId);
+    crumbs.push(cat?.name || "Category");
+  } else if (state.view === "menu" && state.selectedCategoryId) {
+    const cat = state.categories.find(c => c.id === state.selectedCategoryId);
+    crumbs.push(`<button class="crumb" data-action="back-to-subcategories">${cat?.name || "Category"}</button>`);
+    
+    if (state.selectedSubcategoryId) {
+      const subcat = state.subcategories.find(s => s.id === state.selectedSubcategoryId);
+      crumbs.push(subcat?.name || "Subcategory");
+    }
+  }
+  
+  breadcrumb.innerHTML = crumbs.join(" / ");
+  breadcrumb.hidden = state.view === "categories";
+  
+  $$("[data-action]", breadcrumb).forEach(btn => {
+    btn.addEventListener("click", e => handleBreadcrumbClick(e.target.dataset.action));
+  });
+}
+
+function handleBreadcrumbClick(action) {
+  if (action === "back-to-categories") {
+    state.view = "categories";
+    state.selectedCategoryId = null;
+    state.selectedSubcategoryId = null;
+    search.value = "";
+    state.query = "";
+    clearBtn.hidden = true;
+    renderCategories();
+  } else if (action === "back-to-subcategories") {
+    state.view = "subcategories";
+    state.selectedSubcategoryId = null;
+    search.value = "";
+    state.query = "";
+    clearBtn.hidden = true;
+    renderSubcategories(state.selectedCategoryId);
+  }
+}
+
+function renderCategories() {
+  state.view = "categories";
+  renderBreadcrumb();
+  main.innerHTML = "";
+  
+  if (state.query) {
+    const filtered = state.categories.filter(c => 
+      c.name.toLowerCase().includes(state.query.toLowerCase())
+    );
+    renderCategoryGrid(filtered);
+  } else {
+    renderCategoryGrid(state.categories);
+  }
+}
+
+function renderCategoryGrid(categories) {
+  if (!categories.length) {
+    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">No categories found.</p>`;
+    return;
+  }
+  
+  main.innerHTML = "";
+  const grid = document.createElement("div");
+  grid.className = "category-grid";
+  
+  categories.forEach(cat => {
+    const card = document.createElement("div");
+    card.className = "category-card glass";
+    card.innerHTML = `
+      <div class="card-image">
+        <img src="${publicImageUrl(cat.image_url)}" alt="${escapeHtml(cat.name)}" loading="lazy" />
+        <div class="card-overlay"></div>
+      </div>
+      <div class="card-content">
+        <h3>${escapeHtml(cat.name)}</h3>
+      </div>
+    `;
+    card.addEventListener("click", () => selectCategory(cat.id));
+    grid.appendChild(card);
+  });
+  
+  main.appendChild(grid);
+}
+
+async function selectCategory(categoryId) {
+  state.selectedCategoryId = categoryId;
+  try {
+    showSkeletons(6);
+    state.subcategories = await fetchSubcategories(categoryId);
+    renderSubcategories(categoryId);
+  } catch (e) {
+    console.error(e);
+    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">Couldn't load subcategories.</p>`;
+  }
+}
+
+function renderSubcategories(categoryId) {
+  state.view = "subcategories";
+  renderBreadcrumb();
+  main.innerHTML = "";
+  
+  let subcats = state.subcategories;
+  
+  if (state.query) {
+    subcats = subcats.filter(s => 
+      s.name.toLowerCase().includes(state.query.toLowerCase())
+    );
+  }
+  
+  if (!subcats.length) {
+    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">No subcategories found.</p>`;
+    return;
+  }
+  
+  const grid = document.createElement("div");
+  grid.className = "subcategory-grid";
+  
+  subcats.forEach(subcat => {
+    const itemCount = state.menuItems.filter(i => i.subcategory_id === subcat.id).length || "—";
+    const card = document.createElement("div");
+    card.className = "subcategory-card glass";
+    card.innerHTML = `
+      <div class="card-image">
+        <img src="${publicImageUrl(subcat.image_url)}" alt="${escapeHtml(subcat.name)}" loading="lazy" />
+        <div class="card-overlay"></div>
+      </div>
+      <div class="card-content">
+        <h3>${escapeHtml(subcat.name)}</h3>
+        <span class="item-count">${itemCount} items</span>
+      </div>
+    `;
+    card.addEventListener("click", () => selectSubcategory(subcat.id));
+    grid.appendChild(card);
+  });
+  
+  main.appendChild(grid);
+}
+
+async function selectSubcategory(subcategoryId) {
+  state.selectedSubcategoryId = subcategoryId;
+  try {
+    showSkeletons(8);
+    const items = await fetchMenuItems(subcategoryId);
+    state.menuItems = items;
+    renderMenuItems(items);
+  } catch (e) {
+    console.error(e);
+    main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">Couldn't load menu items.</p>`;
+  }
+}
+
+function renderMenuItems(items) {
+  state.view = "menu";
+  renderBreadcrumb();
+  main.innerHTML = "";
+  
+  let filtered = items;
+  
+  if (state.query) {
+    filtered = items.filter(i => {
+      const q = state.query.toLowerCase();
+      return [i.name, i.description, i.ingredients, i.allergens].some(v => 
+        (v ?? "").toLowerCase().includes(q)
+      );
+    });
+  }
+  
+  if (!filtered.length) {
     main.innerHTML = `<p class="muted" style="text-align:center;padding:40px">No items found.</p>`;
     return;
   }
-
-  if (state.active === "all" && !state.query) {
-    // Group by category
-    state.cats.forEach(cat => {
-      const list = items.filter(i => i.category_id === cat.id);
-      if (!list.length) return;
-      const sec = document.createElement("section");
-      sec.className = "cat-section";
-      sec.id = `cat-${cat.id}`;
-      sec.innerHTML = `<h2>${escapeHtml(cat.name)}</h2>`;
-      const grid = document.createElement("div"); grid.className = "menu-grid";
-      list.forEach(i => grid.appendChild(bindCard(i)));
-      sec.appendChild(grid);
-      main.appendChild(sec);
-    });
-  } else {
-    const grid = document.createElement("div"); grid.className = "menu-grid";
-    items.forEach(i => grid.appendChild(bindCard(i)));
-    main.appendChild(grid);
-  }
-  if (scroll) window.scrollTo({ top: 200, behavior: "smooth" });
-}
-
-function bindCard(item) {
-  const c = renderCard(item);
-  c.addEventListener("click", () => showItem(item));
-  return c;
+  
+  const grid = document.createElement("div");
+  grid.className = "menu-grid";
+  
+  filtered.forEach(item => {
+    const card = renderCard(item);
+    card.addEventListener("click", () => showItem(item));
+    grid.appendChild(card);
+  });
+  
+  main.appendChild(grid);
 }
 
 function showItem(item) {
@@ -129,8 +274,19 @@ let t;
 search.addEventListener("input", e => {
   clearBtn.hidden = !e.target.value;
   clearTimeout(t);
-  t = setTimeout(() => { state.query = e.target.value; renderMenu(); }, 120);
+  t = setTimeout(() => {
+    state.query = e.target.value;
+    if (state.view === "categories") renderCategories();
+    else if (state.view === "subcategories") renderSubcategories(state.selectedCategoryId);
+    else if (state.view === "menu") renderMenuItems(state.menuItems);
+  }, 120);
 });
+
 clearBtn.addEventListener("click", () => {
-  search.value = ""; state.query = ""; clearBtn.hidden = true; renderMenu();
+  search.value = "";
+  state.query = "";
+  clearBtn.hidden = true;
+  if (state.view === "categories") renderCategories();
+  else if (state.view === "subcategories") renderSubcategories(state.selectedCategoryId);
+  else if (state.view === "menu") renderMenuItems(state.menuItems);
 });

@@ -1,5 +1,5 @@
-import { fetchMenuItems, CAFE } from "./supabase.js";
-import { $, setYear, setOpenStatus, renderCard, openModal, closeModal } from "./ui.js";
+import { fetchMenuItems, CAFE, getCurrentSession } from "./supabase.js";
+import { $, setYear, setOpenStatus, renderCard, openModal } from "./ui.js";
 
 setYear();
 setOpenStatus();
@@ -9,6 +9,12 @@ setInterval(setOpenStatus, 60_000);
 (async () => {
   const grid = $("#featuredGrid");
   try {
+    const session = await getCurrentSession();
+    if (!session) {
+      grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center">Sign in to access the menu and today's favourites.</p>`;
+      return;
+    }
+
     const items = await fetchMenuItems();
     const featured = items.filter(i => i.is_bestseller && i.is_available).slice(0, 6);
     grid.innerHTML = "";
@@ -44,23 +50,3 @@ $("#qrBtn")?.addEventListener("click", async () => {
   canvas.innerHTML = `<img alt="QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}"/>`;
   openModal("qrModal");
 });
-
-// Sign in prompt
-const showSignInPromptBtn = $("#showSignInPrompt");
-const shouldShowSignInPrompt = () => !localStorage.getItem("signinPromptDismissed");
-
-function scheduleSignInPrompt() {
-  if (!showSignInPromptBtn || !shouldShowSignInPrompt()) return;
-  setTimeout(() => openModal("signinPrompt"), 2500);
-}
-
-showSignInPromptBtn?.addEventListener("click", () => openModal("signinPrompt"));
-
-const signinPrompt = $("#signinPrompt");
-signinPrompt?.addEventListener("click", e => {
-  if (e.target === signinPrompt || e.target.closest("[data-close]")) {
-    localStorage.setItem("signinPromptDismissed", "true");
-  }
-});
-
-scheduleSignInPrompt();

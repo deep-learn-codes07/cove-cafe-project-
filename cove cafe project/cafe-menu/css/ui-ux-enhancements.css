@@ -1,0 +1,541 @@
+/* ============================================================
+  UI/UX Enhancements — Animations, Transitions & Interactions
+   ============================================================ */
+
+/* ============= Page Load & Scroll Behavior ============= */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+body {
+  animation: pageEnter 0.5s ease-out;
+}
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============= Improved Button Interactions ============= */
+.btn {
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              background 0.2s ease, 
+              box-shadow 0.2s ease,
+              border-color 0.2s ease;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Enhanced button states */
+.btn-primary {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-ghost {
+  transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+  opacity: 1;
+  background: var(--surface);
+  transform: none;
+}
+
+/* ============= Enhanced Card Interactions ============= */
+.card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              background 0.2s ease;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(212, 168, 92, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.card-img img {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card:hover .card-img img {
+  transform: scale(1.1);
+}
+
+/* ============= Input Enhancements ============= */
+.form input,
+.form select,
+.form textarea,
+.input {
+  transition: all 0.3s ease;
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus,
+.input:focus {
+  background: var(--surface-2);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(212, 168, 92, 0.1);
+  transform: none;
+}
+
+.form input:valid,
+.form textarea:valid {
+  border-color: var(--green);
+}
+
+.form input:invalid:not(:placeholder-shown),
+.form textarea:invalid:not(:placeholder-shown) {
+  border-color: var(--red);
+}
+
+/* ============= Modal Improvements ============= */
+.modal {
+  animation: fadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+.modal-card {
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-close {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: rotate(90deg);
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ============= FAB Enhanced Animation ============= */
+.fab {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 168, 92, 0.4);
+}
+
+.fab:hover {
+  transform: scale(1.12) translateY(-2px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(212, 168, 92, 0.6);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+/* ============= Social Icons Animation ============= */
+.socials a,
+.socials button {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.socials a:hover,
+.socials button:hover {
+  transform: translateY(-4px) scale(1.1);
+  color: var(--gold);
+  box-shadow: 0 8px 24px rgba(212, 168, 92, 0.3);
+}
+
+.socials a:active,
+.socials button:active {
+  transform: translateY(-2px) scale(0.95);
+}
+
+/* ============= Logo Animation Enhancements ============= */
+.logo-ring {
+  transition: filter 0.3s ease;
+}
+
+.hero:hover .logo-ring {
+  filter: drop-shadow(0 0 20px rgba(212, 168, 92, 0.3));
+}
+
+/* ============= Navigation Improvements ============= */
+.nav {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.brand {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.brand:hover {
+  transform: scale(1.05);
+}
+
+.brand-mark {
+  transition: all 0.3s ease;
+}
+
+.brand-mark:hover {
+  box-shadow: 0 0 32px rgba(212, 168, 92, 0.6);
+  transform: rotate(5deg);
+}
+
+/* ============= Category Tab Animation ============= */
+.cat-tab {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  position: relative;
+}
+
+.cat-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cat-tab:hover::after {
+  transform: scaleX(1);
+}
+
+.cat-tab.active {
+  transform: scale(1.05);
+}
+
+/* ============= Search Input Animation ============= */
+.search-wrap {
+  transition: all 0.3s ease;
+}
+
+.search-wrap input {
+  transition: all 0.3s ease;
+}
+
+.search-wrap input:focus {
+  color: var(--text);
+}
+
+.search-wrap:focus-within {
+  box-shadow: 0 0 20px rgba(212, 168, 92, 0.2);
+  border-color: var(--gold);
+}
+
+/* ============= Glass Effect Enhancement ============= */
+.glass {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+  border-radius: var(--radius);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.glass:hover::before {
+  opacity: 1;
+}
+
+/* ============= Loading Animation Improvements ============= */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton-card {
+  animation: shimmer 2s infinite;
+  background-size: 1000px 100%;
+}
+
+/* ============= Smooth Link Transitions ============= */
+a {
+  transition: color 0.2s ease, opacity 0.2s ease;
+  position: relative;
+}
+
+a:hover {
+  opacity: 0.9;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ============= Status Pill Animation ============= */
+.status-pill {
+  transition: all 0.3s ease;
+}
+
+.status-pill .dot {
+  transition: all 0.3s ease;
+}
+
+.status-pill.open .dot {
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 12px var(--green); }
+  50% { box-shadow: 0 0 20px var(--green); }
+}
+
+.status-pill.closed .dot {
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 8px var(--red); }
+  50% { box-shadow: 0 0 12px var(--red); }
+}
+
+/* ============= Badge Animation ============= */
+.badge {
+  transition: all 0.3s ease;
+  animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.badge:hover {
+  transform: scale(1.1);
+}
+
+/* ============= Menu Item Modal Enhancement ============= */
+.item-modal .item-hero img {
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.item-modal:hover .item-hero img {
+  transform: scale(1.05);
+}
+
+.item-cta .btn {
+  transition: all 0.3s ease;
+}
+
+.item-cta .btn:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* ============= Hover State for Form Labels ============= */
+.form label {
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.form label:hover {
+  color: var(--gold);
+}
+
+/* ============= CTA Row Animation ============= */
+.cta-row {
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cta-row .btn {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.cta-row .btn:nth-child(1) { animation-delay: 0.3s; }
+.cta-row .btn:nth-child(2) { animation-delay: 0.4s; }
+.cta-row .btn:nth-child(3) { animation-delay: 0.5s; }
+
+/* ============= Admin Panel Enhancements ============= */
+.admin-item {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 168, 92, 0.2);
+}
+
+.cat-list li {
+  transition: all 0.3s ease;
+}
+
+.cat-list li:hover {
+  background: var(--surface-2);
+  transform: translateX(4px);
+}
+
+.cat-list button {
+  transition: all 0.2s ease;
+}
+
+.cat-list button:hover {
+  opacity: 1;
+  color: var(--red);
+  transform: scale(1.2);
+}
+
+/* ============= Divider Animation ============= */
+.divider {
+  animation: fadeInLeft 0.6s ease-out 0.4s backwards;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============= Active State Visual Feedback ============= */
+button:active,
+a:active {
+  filter: brightness(0.95);
+}
+
+/* ============= Accessibility & Focus Management ============= */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ============= Smooth Transitions for Responsive Changes ============= */
+@media (max-width: 768px) {
+  .nav,
+  .card,
+  .modal-card,
+  .fab {
+    transition: all 0.3s ease;
+  }
+  
+  body {
+    animation: none;
+  }
+}

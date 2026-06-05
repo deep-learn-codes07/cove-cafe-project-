@@ -31,11 +31,22 @@ export async function fetchCategories() {
   return data ?? [];
 }
 
-export async function fetchMenuItems() {
+export async function fetchSubcategories(categoryId) {
   const { data, error } = await supabase
-    .from("menu_items")
+    .from("subcategories")
     .select("*")
-    .order("created_at", { ascending: false });
+    .eq("category_id", categoryId)
+    .order("display_order", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function fetchMenuItems(subcategoryId = null) {
+  let query = supabase.from("menu_items").select("*");
+  if (subcategoryId) {
+    query = query.eq("subcategory_id", subcategoryId);
+  }
+  const { data, error } = await query.order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
 }
@@ -45,4 +56,34 @@ export function publicImageUrl(path) {
   if (/^https?:/i.test(path)) return path;
   const { data } = supabase.storage.from(CAFE.storageBucket).getPublicUrl(path);
   return data.publicUrl;
+}
+
+export async function getCurrentSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
+  return data?.session ?? null;
+}
+
+export async function upsertUserProfile(user) {
+  if (!user?.id) return null;
+
+  const metadata = user.user_metadata ?? {};
+  const identity = user.identities?.[0];
+  const profile = {
+    id: user.id,
+    email: user.email ?? metadata.email ?? null,
+    full_name: metadata.full_name ?? metadata.name ?? null,
+    phone: user.phone ?? metadata.phone ?? null,
+    provider: identity?.provider ?? user.app_metadata?.provider ?? "email",
+    last_sign_in_at: new Date().toISOString()
+  };
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .upsert(profile, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
 }

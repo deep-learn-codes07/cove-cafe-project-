@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
 <link rel="stylesheet" href="./css/styles.css" />
 </head>
-<body class="menu-page">
+<body class="menu-page menu-locked">
 <div class="bg-grain" aria-hidden="true"></div>
 <div class="bg-orb orb-a" aria-hidden="true"></div>
 <div class="bg-orb orb-b" aria-hidden="true"></div>
@@ -35,17 +35,18 @@
   <div class="banner-inner">
     <h1 class="display">The Menu</h1>
     <p class="tagline">Tap any dish to see ingredients and allergens.</p>
-    <div class="search-wrap glass">
-      <i class="i-search"></i>
-      <input id="searchInput" type="search" placeholder="Search by name, category, description…" autocomplete="off"/>
-      <button id="clearSearch" hidden aria-label="Clear"><i class="i-x"></i></button>
+    <div class="banner-actions">
+      <div class="search-wrap glass">
+        <i class="i-search"></i>
+        <input id="searchInput" type="search" placeholder="Search by name, category, description…" autocomplete="off"/>
+        <button id="clearSearch" hidden aria-label="Clear"><i class="i-x"></i></button>
+      </div>
+    </div>
+    <div class="cat-tabs-wrap">
+      <div id="catTabs" class="cat-tabs"></div>
     </div>
   </div>
 </section>
-
-<div class="cat-tabs-wrap">
-  <div id="catTabs" class="cat-tabs"></div>
-</div>
 
 <main id="menuMain" class="menu-main">
   <div class="skeleton-grid">
@@ -56,6 +57,46 @@
 
 <div class="fab-stack">
   <a class="fab fab-wa" href="https://wa.me/+917219826169?text=Hi%20Cove%20cafe%2C%20I%27d%20like%20to%20order" target="_blank" rel="noopener" aria-label="Order on WhatsApp"><i class="i-message-circle"></i></a>
+</div>
+
+<!-- Required login gate -->
+<div id="authGate" class="modal auth-gate" hidden>
+  <div class="modal-card glass auth-gate-card">
+    <div class="auth-gate-brand">
+      <div class="auth-logo"><img src="./assets/logo/logo.svg" alt="Cove cafe logo" /></div>
+      <div>
+        <span>Cove cafe</span>
+        <small>Member access</small>
+      </div>
+    </div>
+
+    <h2 id="authGateTitle">Login required</h2>
+    <p class="muted" id="authGateText">Please sign in to access the Cove cafe menu.</p>
+
+    <div class="auth-mode-tabs" role="tablist" aria-label="Login options">
+      <button id="popupSignInTab" class="active" type="button">Sign in</button>
+      <button id="popupSignUpTab" type="button">Create account</button>
+    </div>
+
+    <form id="popupSignInForm" class="form auth-gate-form">
+      <label>Email<input type="email" id="popupSignInEmail" placeholder="you@example.com" autocomplete="email" required /></label>
+      <label>Password<input type="password" id="popupSignInPassword" placeholder="Password" autocomplete="current-password" required /></label>
+      <button class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+
+    <form id="popupSignUpForm" class="form auth-gate-form" hidden>
+      <label>Full name<input type="text" id="popupSignUpName" placeholder="Jane Doe" autocomplete="name" required /></label>
+      <label>Email<input type="email" id="popupSignUpEmail" placeholder="you@example.com" autocomplete="email" required /></label>
+      <label>Password<input type="password" id="popupSignUpPassword" placeholder="Password" autocomplete="new-password" required /></label>
+      <label>Phone number<input type="tel" id="popupSignUpPhone" placeholder="9000000000" pattern="\d{10}" inputmode="numeric" maxlength="10" autocomplete="tel" /></label>
+      <button class="btn btn-primary" type="submit">Create account</button>
+    </form>
+
+    <div class="auth-divider"><span>or</span></div>
+    <button id="popupGoogleAuth" class="btn btn-outline" type="button"><i class="i-chrome"></i> Continue with Google</button>
+    <p id="popupAuthErr" class="err" hidden></p>
+    <p id="popupAuthInfo" class="muted" hidden></p>
+  </div>
 </div>
 
 <!-- Item modal -->
