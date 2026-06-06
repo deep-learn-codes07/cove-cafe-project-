@@ -23,6 +23,245 @@
   --font-body: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+/* ============= Mandatory Login Popup ============= */
+body.login-locked {
+  overflow: hidden;
+}
+
+body.login-locked main,
+body.login-locked footer,
+body.login-locked .fab-stack,
+body.login-locked .bg-grain,
+body.login-locked .bg-orb {
+  filter: blur(12px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.cove-login-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.cove-login-modal[hidden] {
+  display: none;
+}
+
+.cove-login-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(212,168,92,.18), transparent 34rem),
+    rgba(0,0,0,.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.cove-login-card {
+  position: relative;
+  width: min(460px, 100%);
+  padding: 30px;
+  border-color: rgba(212,168,92,.28);
+  background: linear-gradient(145deg, rgba(21,21,26,.92), rgba(10,10,15,.84));
+  box-shadow: 0 28px 90px rgba(0,0,0,.58), 0 0 70px rgba(212,168,92,.12);
+  animation: coveLoginIn .32s ease both;
+}
+
+@keyframes coveLoginIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cove-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.cove-login-logo {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(212,168,92,.35);
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+  box-shadow: inset 0 0 24px rgba(212,168,92,.16);
+}
+
+.cove-login-logo img {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+}
+
+.cove-auth-step h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(32px, 7vw, 44px);
+  line-height: 1;
+  color: var(--text);
+}
+
+.cove-auth-step p {
+  margin: 0 0 22px;
+  color: var(--muted);
+}
+
+.cove-auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.cove-auth-form label {
+  display: grid;
+  gap: 8px;
+  color: rgba(243,239,230,.88);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cove-auth-form input {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 16px;
+  outline: none;
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  padding: 0 15px;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.cove-auth-form input::placeholder {
+  color: rgba(255,255,255,.35);
+}
+
+.cove-auth-form input:focus {
+  border-color: var(--gold);
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 0 0 4px rgba(212,168,92,.12);
+}
+
+.cove-auth-submit,
+.cove-auth-back {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+}
+
+.cove-auth-submit {
+  margin-top: 4px;
+  color: #1a120a;
+  background: linear-gradient(135deg, var(--gold), var(--gold-2));
+  box-shadow: 0 14px 32px rgba(212,168,92,.28);
+}
+
+.cove-auth-submit:hover,
+.cove-auth-back:hover {
+  transform: translateY(-1px);
+}
+
+.cove-auth-submit:disabled,
+.cove-auth-back:disabled {
+  opacity: .62;
+  cursor: wait;
+  transform: none;
+}
+
+.cove-auth-back {
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+}
+
+.cove-auth-message {
+  min-height: 20px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.cove-auth-message.error {
+  color: #f3b1ad;
+}
+
+.cove-auth-message.success {
+  color: #cdeed8;
+}
+
+.cove-auth-debug {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  background: rgba(255,255,255,.045);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.cove-auth-debug summary {
+  cursor: pointer;
+  color: rgba(243,239,230,.88);
+  font-weight: 800;
+}
+
+.cove-auth-debug dl {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cove-auth-debug div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.cove-auth-debug dt {
+  color: rgba(243,239,230,.72);
+  font-weight: 700;
+}
+
+.cove-auth-debug dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .cove-login-modal {
+    align-items: end;
+    padding: 12px;
+  }
+
+  .cove-login-card {
+    padding: 24px 20px;
+    border-radius: 24px;
+  }
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100%}
 body{overflow-x:hidden;font-size:15px;line-height:1.55;padding-bottom:90px;-webkit-touch-callout:none}
@@ -34,6 +273,61 @@ img{max-width:100%;display:block}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 input,select,textarea{font:inherit;color:var(--text)}
 
+
+/*menu preview*/
+.menu-preview-card{
+  max-width:420px;
+  overflow:hidden;
+  border-radius:24px;
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.08);
+  transition:.3s ease;
+}
+
+.menu-preview-card:hover{
+  transform:translateY(-6px);
+  border-color:#d4a85c;
+}
+
+.menu-preview-image{
+  height:220px;
+  overflow:hidden;
+}
+
+.menu-preview-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:.4s ease;
+}
+
+.menu-preview-card:hover .menu-preview-image img{
+  transform:scale(1.05);
+}
+
+.menu-preview-content{
+  padding:20px;
+  text-align:center;
+}
+
+.menu-preview-logo img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  margin-bottom:12px;
+}
+
+.menu-preview-content h3{
+  margin-bottom:10px;
+  color:#fff;
+}
+
+.menu-preview-content p{
+  color:#bdbdbd;
+  margin-bottom:18px;
+  line-height:1.6;
+}
 /* ============= Background ============= */
 .bg-grain{position:fixed;inset:0;pointer-events:none;z-index:-3;
   background:
@@ -108,7 +402,7 @@ input,select,textarea{font:inherit;color:var(--text)}
   transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
   border:1px solid transparent;white-space:nowrap}
 .btn:hover{transform:translateY(-1px)}
-.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a120a;
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#131211;
   box-shadow:0 8px 24px rgba(212,168,92,.35)}
 .btn-primary:hover{box-shadow:0 12px 30px rgba(212,168,92,.55)}
 .btn-glass{background:var(--surface-2);border-color:var(--border);backdrop-filter:blur(14px)}

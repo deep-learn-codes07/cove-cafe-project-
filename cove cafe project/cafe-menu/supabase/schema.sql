@@ -11,6 +11,7 @@ create extension if not exists "pgcrypto";
 drop table if exists public.menu_items cascade;
 drop table if exists public.subcategories cascade;
 drop table if exists public.categories cascade;
+drop table if exists public.customer_logins cascade;
 drop table if exists public.profiles cascade;
 drop policy "public read images" on storage.objects;
 drop policy if exists "public read images" on storage.objects;
@@ -89,6 +90,17 @@ created_at timestamptz not null default now()
 
 create index menu_items_subcategory_idx
 on public.menu_items(subcategory_id);
+
+-- ============================================================
+-- CUSTOMER LOGIN LOGS
+-- ============================================================
+
+create table public.customer_logins (
+id uuid primary key default gen_random_uuid(),
+name text,
+phone text unique,
+created_at timestamptz default now()
+);
 
 -- ============================================================
 -- USER PROFILES
@@ -185,6 +197,7 @@ execute function public.handle_new_user();
 alter table public.categories enable row level security;
 alter table public.subcategories enable row level security;
 alter table public.menu_items enable row level security;
+alter table public.customer_logins enable row level security;
 alter table public.profiles enable row level security;
 
 -- ============================================================
@@ -205,6 +218,29 @@ create policy "public read menu_items"
 on public.menu_items
 for select
 using (true);
+
+-- ============================================================
+-- CUSTOMER LOGIN POLICIES
+-- ============================================================
+
+create policy "authenticated read customer_logins"
+on public.customer_logins
+for select
+to authenticated
+using (true);
+
+create policy "authenticated insert customer_logins"
+on public.customer_logins
+for insert
+to authenticated
+with check (true);
+
+create policy "authenticated update customer_logins"
+on public.customer_logins
+for update
+to authenticated
+using (true)
+with check (true);
 
 -- ============================================================
 -- PROFILE POLICIES

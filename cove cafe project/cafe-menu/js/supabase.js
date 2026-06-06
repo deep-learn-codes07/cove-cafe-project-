@@ -11,6 +11,11 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true }
 });
 
+console.log("[Supabase] Client initialized");
+console.log("[Supabase] URL:", SUPABASE_URL);
+console.log("[Supabase] anon key present:", Boolean(SUPABASE_ANON_KEY));
+console.log("[Supabase] anon key project ref:", getJwtProjectRef(SUPABASE_ANON_KEY));
+
 // Cafe config — used across pages
 export const CAFE = {
   name: "Cove Cafe",
@@ -81,6 +86,106 @@ export async function upsertUserProfile(user) {
   const { data, error } = await supabase
     .from("profiles")
     .upsert(profile, { onConflict: "id" })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function sendCustomerOtp(phone) {
+  console.log("Sending OTP...");
+  console.log("Phone:", phone);
+  console.log("[Supabase Auth] signInWithOtp request:", {
+    phone,
+    options: { channel: "sms" }
+  });
+
+  const { data, error } = await supabase.auth.signInWithOtp({
+    phone,
+    options: {
+      channel: "sms"
+    }
+  });
+
+  console.log("[Supabase Auth] signInWithOtp response data:", data);
+  if (error) {
+    console.error("[Supabase Auth] signInWithOtp error:");
+    console.error(error);
+    throw error;
+  }
+
+  return data;
+}
+
+export async function verifyCustomerOtp(phone, token) {
+  console.log("[Supabase Auth] verifyOtp request:", {
+    phone,
+    tokenLength: String(token || "").length,
+    type: "sms"
+  });
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: "sms"
+  });
+
+  console.log("[Supabase Auth] verifyOtp response data:", data);
+  if (error) {
+    console.error("[Supabase Auth] verifyOtp error:");
+    console.error(error);
+    throw error;
+  }
+
+  return data;
+}
+
+function getJwtProjectRef(jwt) {
+  try {
+    const payload = JSON.parse(atob(jwt.split(".")[1]));
+    return payload?.ref || "unknown";
+  } catch (error) {
+    console.error("[Supabase] Could not decode anon key payload:");
+    console.error(error);
+    return "invalid-key";
+  }
+}
+
+export async function upsertCustomerLogin({ name, phone }) {
+  const now = new Date().toISOString();
+
+  const { data: existing, error: findError } = await supabase
+    .from("customer_logins")
+    .select("id")
+    .eq("phone", phone)
+    .maybeSingle();
+
+  if (findError) throw findError;
+
+  if (existing?.id) {
+    const updatePayload = { name, phone, created_at: now };
+    const { data, error } = await supabase
+      .from("customer_logins")
+      .update(updatePayload)
+      .eq("phone", phone)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  const insertPayload = {
+    id: crypto.randomUUID(),
+    name,
+    phone,
+    created_at: now
+  };
+
+  const { data, error } = await supabase
+    .from("customer_logins")
+    .insert(insertPayload)
     .select()
     .single();
 

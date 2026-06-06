@@ -1,4 +1,4 @@
-import { fetchMenuItems, CAFE, getCurrentSession } from "./supabase.js";
+import { fetchMenuItems, CAFE } from "./supabase.js";
 import { $, setYear, setOpenStatus, renderCard, openModal } from "./ui.js";
 
 setYear();
@@ -6,11 +6,10 @@ setOpenStatus();
 setInterval(setOpenStatus, 60_000);
 
 // Load featured (bestsellers)
-(async () => {
+async function loadFeaturedItems() {
   const grid = $("#featuredGrid");
   try {
-    const session = await getCurrentSession();
-    if (!session) {
+    if (localStorage.getItem("coveCafeLoggedIn") !== "true") {
       grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center">Sign in to access the menu and today's favourites.</p>`;
       return;
     }
@@ -32,7 +31,10 @@ setInterval(setOpenStatus, 60_000);
     console.error(e);
     grid.innerHTML = `<p class="muted" style="grid-column:1/-1;text-align:center">Couldn't load menu. Check Supabase config.</p>`;
   }
-})();
+}
+
+loadFeaturedItems();
+window.addEventListener("coveCafeLogin", loadFeaturedItems);
 
 // Share
 $("#shareBtn")?.addEventListener("click", async () => {
