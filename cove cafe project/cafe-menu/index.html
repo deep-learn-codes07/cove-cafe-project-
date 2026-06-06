@@ -61,40 +61,131 @@
         <span class="dot"></span><span id="statusText">Checking hours…</span>
       </div>
 
-      <div class="menu-preview-card glass">
-
-    <h3>Explore Our Menu</h3>
-
-    <p>
-      Discover handcrafted beverages, gourmet food,
-      desserts and signature specials.
-    </p>
-
-    <a class="btn btn-primary" href="./menu.html">
-      <i class="i-book-open"></i>
-      View Menu
-    </a>
-
-  </div>
-
-</div>
-
       <div class="socials">
         <a aria-label="Instagram" target="_blank" rel="noopener" href="https://www.instagram.com/cove__cafe?igsh=eW1kNHJicmswMjV6"><i class="i-instagram"></i>
         <img src="./assets/insta _logo.png" alt="instagram "></a>
         <a aria-label="WhatsApp"  target="_blank" rel="noopener" href="https://wa.me/917506420904"><i class="i-message-circle"></i>
         <img src="./assets/wa.png" alt="WhatsApp"></a>
-       
-
       </div>
     </div>
   </section>
+
+  <section class="home-about" aria-labelledby="aboutTitle">
+    <div class="home-section-inner about-panel glass">
+      <p class="section-kicker">Cove Cafe</p>
+      <h2 id="aboutTitle" class="section-title">A Warm Cove For Every Craving</h2>
+      <p>
+        From slow-crafted coffee to indulgent cafe plates, Cove Cafe brings together
+        a dark, elegant mood with familiar flavours made for lingering conversations.
+      </p>
+    </div>
+  </section>
+
+  <section class="menu-preview-section" aria-labelledby="menuPreviewTitle">
+    <div class="home-section-inner">
+      <p class="section-kicker">Signature Categories</p>
+      <h2 id="menuPreviewTitle" class="section-title">Explore Our Menu</h2>
+      <p class="section-subtitle">Discover handcrafted beverages, gourmet food and signature cafe specials.</p>
+      <div id="menuPreviewGrid" class="menu-category-grid" aria-live="polite">
+        <div class="preview-skeleton"></div>
+        <div class="preview-skeleton"></div>
+        <div class="preview-skeleton"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallerySection" class="storage-gallery-section" aria-labelledby="galleryTitle">
+    <div class="home-section-inner">
+      <p class="section-kicker">Cove Moments</p>
+      <h2 id="galleryTitle" class="section-title">Gallery</h2>
+      <p class="section-subtitle">A glimpse of Cove Cafe</p>
+      <div id="storageGalleryStatus" class="storage-gallery-status" role="status" aria-live="polite">
+        <span class="gallery-spinner" aria-hidden="true"></span>
+        Loading gallery...
+      </div>
+      <div id="storageGalleryGrid" class="storage-gallery-grid" aria-live="polite">
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+        <div class="storage-gallery-skeleton"></div>
+      </div>
+    </div>
+  </section>
+/*
+  <section id="memoriesSection" class="memories-section" aria-labelledby="memoriesTitle">
+    <div class="home-section-inner">
+      <p class="section-kicker">Community Gallery</p>
+      <h2 id="memoriesTitle" class="section-title">Share Your Cove Moment</h2>
+      <p class="section-subtitle">Upload your favorite memories from Cove Cafe.</p>
+
+      <div class="memories-layout">
+        <form id="memoryUploadForm" class="memory-upload-card glass">
+          <label>
+            Name
+            <input id="memoryName" type="text" autocomplete="name" placeholder="Your name" required />
+          </label>
+
+          <label>
+            Photo
+            <input id="memoryPhoto" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required />
+          </label>
+
+          <div id="memoryPreview" class="memory-preview" hidden>
+            <img id="memoryPreviewImage" alt="Selected Cove Cafe memory preview" />
+          </div>
+
+          <label>
+            Caption <span>(optional)</span>
+            <textarea id="memoryCaption" rows="3" placeholder="Tell us about this moment"></textarea>
+          </label>
+
+          <button id="memorySubmit" class="btn btn-primary" type="submit">
+            <i class="i-upload"></i>
+            Upload Memory
+          </button>
+
+          <p id="memoryFormMessage" class="memory-form-message" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="approved-memories-panel glass">
+          <div class="approved-memories-heading">
+            <h3>Cove Memories</h3>
+            <span id="memoriesCount">Loading...</span>
+          </div>
+          <div id="memoriesGallery" class="memories-gallery" aria-live="polite">
+            <div class="memory-skeleton"></div>
+            <div class="memory-skeleton"></div>
+            <div class="memory-skeleton"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
 
   <section class="featured">
     <h2 class="section-title">Today's Favourites</h2>
     <div id="featuredGrid" class="featured-grid">
       <!-- skeletons -->
       <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+    </div>
+  </section>
+
+  <section class="instagram-section" aria-labelledby="instagramTitle">
+    <div class="home-section-inner instagram-panel glass">
+      <div>
+        <p class="section-kicker">Stay Connected</p>
+        <h2 id="instagramTitle" class="section-title">Instagram</h2>
+        <p class="section-subtitle">Follow the latest plates, pours and Cove Cafe moments.</p>
+      </div>
+      <a class="btn btn-primary" target="_blank" rel="noopener" href="https://www.instagram.com/cove__cafe?igsh=eW1kNHJicmswMjV6">
+        <i class="i-instagram"></i>
+        Follow Cove Cafe
+      </a>
     </div>
   </section>
 </main>
@@ -188,6 +279,41 @@
   </div>
 </div>
 
+<div id="galleryLightbox" class="gallery-lightbox modal" hidden>
+  <article class="gallery-lightbox-card glass" role="dialog" aria-modal="true" aria-labelledby="galleryLightboxName">
+    <button class="modal-close" data-close aria-label="Close"><i class="i-x"></i></button>
+    <div class="gallery-lightbox-image">
+      <img id="galleryLightboxImage" alt="" />
+    </div>
+    <div class="gallery-lightbox-content">
+      <p id="galleryLightboxCategory" class="gallery-lightbox-category"></p>
+      <div class="row-between">
+        <h3 id="galleryLightboxName"></h3>
+        <strong id="galleryLightboxPrice" class="price"></strong>
+      </div>
+      <a id="galleryLightboxMenu" class="btn btn-primary" href="./menu.html">
+        <i class="i-book-open"></i>
+        View In Menu
+      </a>
+    </div>
+  </article>
+</div>
+
+<div id="storageGalleryLightbox" class="storage-gallery-lightbox" hidden>
+  <button id="storageGalleryClose" class="storage-gallery-close" type="button" aria-label="Close gallery image">
+    <i class="i-x"></i>
+  </button>
+  <button id="storageGalleryPrev" class="storage-gallery-nav storage-gallery-prev" type="button" aria-label="Previous image">
+    <i class="i-chevron-left"></i>
+  </button>
+  <figure class="storage-gallery-lightbox-frame">
+    <img id="storageGalleryLightboxImage" alt="Cove Cafe gallery image" />
+  </figure>
+  <button id="storageGalleryNext" class="storage-gallery-nav storage-gallery-next" type="button" aria-label="Next image">
+    <i class="i-chevron-right"></i>
+  </button>
+</div>
+
 <footer class="foot">
   <p>© <span id="yr"></span> Cove cafe · Crafted with care</p>
 </footer>
@@ -195,5 +321,7 @@
 <script type="module" src="./js/supabase.js"></script>
 <script type="module" src="./js/auth-popup.js"></script>
 <script type="module" src="./js/home.js"></script>
+<script type="module" src="./js/gallery.js"></script>
+<script type="module" src="./js/memories.js"></script>
 </body>
 </html>

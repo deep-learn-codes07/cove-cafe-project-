@@ -11,6 +11,7 @@ create extension if not exists "pgcrypto";
 drop table if exists public.menu_items cascade;
 drop table if exists public.subcategories cascade;
 drop table if exists public.categories cascade;
+drop table if exists public.customer_memories cascade;
 drop table if exists public.customer_logins cascade;
 drop table if exists public.profiles cascade;
 drop policy "public read images" on storage.objects;
@@ -18,6 +19,9 @@ drop policy if exists "public read images" on storage.objects;
 drop policy if exists "auth upload images" on storage.objects;
 drop policy if exists "auth update images" on storage.objects;
 drop policy if exists "auth delete images" on storage.objects;
+drop policy if exists "public read customer memories" on storage.objects;
+drop policy if exists "public upload customer memories" on storage.objects;
+drop policy if exists "auth delete customer memories" on storage.objects;
 
 -- ============================================================
 -- CATEGORIES
@@ -99,6 +103,20 @@ create table public.customer_logins (
 id uuid primary key default gen_random_uuid(),
 name text,
 phone text unique,
+created_at timestamptz default now()
+);
+
+-- ============================================================
+-- CUSTOMER MEMORIES
+-- ============================================================
+
+create table public.customer_memories (
+id uuid primary key default gen_random_uuid(),
+name text,
+phone text,
+image_url text,
+caption text,
+approved boolean not null default false,
 created_at timestamptz default now()
 );
 
@@ -197,6 +215,7 @@ execute function public.handle_new_user();
 alter table public.categories enable row level security;
 alter table public.subcategories enable row level security;
 alter table public.menu_items enable row level security;
+alter table public.customer_memories enable row level security;
 alter table public.customer_logins enable row level security;
 alter table public.profiles enable row level security;
 
@@ -218,6 +237,16 @@ create policy "public read menu_items"
 on public.menu_items
 for select
 using (true);
+
+create policy "public read approved customer_memories"
+on public.customer_memories
+for select
+using (approved = true);
+
+create policy "public insert pending customer_memories"
+on public.customer_memories
+for insert
+with check (approved = false);
 
 -- ============================================================
 -- CUSTOMER LOGIN POLICIES
@@ -284,6 +313,21 @@ to authenticated
 using (true)
 with check (true);
 
+create policy "auth manage customer_memories"
+on public.customer_memories
+for all
+to authenticated
+using (true)
+with check (true);
+
+do $$
+begin
+  alter publication supabase_realtime add table public.customer_memories;
+exception
+  when duplicate_object then null;
+end;
+$$;
+
 -- ============================================================
 -- STORAGE BUCKET
 -- ============================================================
@@ -296,6 +340,18 @@ public
 values (
 'menu-images',
 'menu-images',
+true
+)
+on conflict do nothing;
+
+insert into storage.buckets (
+id,
+name,
+public
+)
+values (
+'food-gallery',
+'food-gallery',
 true
 )
 on conflict do nothing;
@@ -327,6 +383,26 @@ on storage.objects
 for delete
 to authenticated
 using (bucket_id = 'menu-images');
+
+create policy "public read customer memories"
+on storage.objects
+for select
+using (bucket_id = 'food-gallery');
+
+create policy "public upload customer memories"
+on storage.objects
+for insert
+with check (
+bucket_id = 'food-gallery'
+and (storage.foldername(name))[1] = 'uploads'
+and lower(storage.extension(name)) in ('jpg','jpeg','png','webp')
+);
+
+create policy "auth delete customer memories"
+on storage.objects
+for delete
+to authenticated
+using (bucket_id = 'food-gallery');
 
 -- ============================================================
 -- DEFAULT CATEGORIES

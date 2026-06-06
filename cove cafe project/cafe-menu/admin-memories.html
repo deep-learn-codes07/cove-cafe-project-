@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0b0f" />
+<title>Memory Moderation - Cove Cafe</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@latest/font/lucide.css">
+<link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="admin-page memories-admin-page">
+<div class="bg-grain" aria-hidden="true"></div>
+
+<header class="nav glass">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark"><img src="./assets/logo/covelogo.png" alt="Cove cafe logo" /></span>
+    <span class="brand-name">Cove <em>Memories</em></span>
+  </a>
+  <nav class="admin-memory-nav">
+    <a class="btn btn-ghost" href="./admin.html"><i class="i-layout-dashboard"></i> Menu Admin</a>
+    <button id="memoryAdminLogout" class="btn btn-ghost" hidden><i class="i-log-out"></i> Logout</button>
+  </nav>
+</header>
+
+<section id="memoryAdminLogin" class="auth-wrap">
+  <div class="auth-card glass">
+    <h1>Admin Sign In</h1>
+    <p class="muted">Moderate customer-submitted Cove Cafe memories.</p>
+    <form id="memoryAdminLoginForm" class="form">
+      <label>Email<input type="email" id="memoryAdminEmail" required /></label>
+      <label>Password<input type="password" id="memoryAdminPassword" required /></label>
+      <button class="btn btn-primary" type="submit">Sign in</button>
+      <p id="memoryAdminLoginError" class="err" hidden></p>
+    </form>
+  </div>
+</section>
+
+<main id="memoryAdminDashboard" class="admin-wrap memory-admin-wrap" hidden>
+  <section class="glass panel memory-admin-header">
+    <div>
+      <p class="section-kicker">Moderation</p>
+      <h1>Customer Memories</h1>
+      <p class="muted">Approve the best moments for the public homepage gallery.</p>
+    </div>
+    <div class="memory-admin-filters" role="group" aria-label="Memory filters">
+      <button class="memory-filter active" type="button" data-filter="all">All</button>
+      <button class="memory-filter" type="button" data-filter="pending">Pending</button>
+      <button class="memory-filter" type="button" data-filter="approved">Approved</button>
+    </div>
+  </section>
+
+  <section class="glass panel">
+    <div id="memoryAdminStatus" class="memory-admin-status" role="status">Loading memories...</div>
+    <div id="memoryAdminGrid" class="memory-admin-grid"></div>
+  </section>
+</main>
+
+<script type="module" src="./js/supabase.js"></script>
+<script type="module" src="./js/admin-memories.js"></script>
+</body>
+</html>

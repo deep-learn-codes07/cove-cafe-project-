@@ -65,7 +65,7 @@ async function init() {
       return;
     }
 
-    state.selectedCategoryId = String(state.categories[0].id);
+    state.selectedCategoryId = getInitialCategoryId() || String(state.categories[0].id);
     renderCategories();
     await loadCategory(state.selectedCategoryId);
   } catch (error) {
@@ -177,6 +177,8 @@ function renderCategories() {
       await loadCategory(button.dataset.categoryId);
     });
   });
+
+  $(".category-card.active", els.categoryStrip)?.scrollIntoView({ block: "nearest", inline: "center" });
 }
 
 async function loadCategory(categoryId) {
@@ -457,6 +459,21 @@ function scrollToTopOfMenu() {
   $(".category-strip")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function getInitialCategoryId() {
+  const requested = new URLSearchParams(window.location.search).get("category");
+  if (!requested) return "";
+
+  const normalized = normalizeCategoryToken(requested);
+  const category = state.categories.find((item) => {
+    const id = normalizeCategoryToken(item.id);
+    const name = normalizeCategoryToken(item.name);
+    const slug = slugify(item.name);
+    return normalized === id || normalized === name || normalized === slug;
+  });
+
+  return category ? String(category.id) : "";
+}
+
 function sortByDisplayOrder(items) {
   return [...(items || [])].sort((a, b) => {
     const orderA = Number(a.display_order ?? 0);
@@ -468,6 +485,19 @@ function sortByDisplayOrder(items) {
 
 function cssSafeId(value) {
   return String(value).replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+function slugify(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeCategoryToken(value) {
+  return decodeURIComponent(String(value || "")).trim().toLowerCase();
 }
 
 function formatPrice(value) {

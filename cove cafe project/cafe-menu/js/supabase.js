@@ -56,6 +56,28 @@ export async function fetchMenuItems(subcategoryId = null) {
   return data ?? [];
 }
 
+export async function fetchGalleryMenuItems() {
+  const { data, error } = await supabase
+    .from("menu_items")
+    .select(`
+      *,
+      subcategories (
+        id,
+        name,
+        categories (
+          id,
+          name
+        )
+      )
+    `)
+    .eq("is_available", true)
+    .not("image_url", "is", null)
+    .limit(60);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 export function publicImageUrl(path) {
   if (!path) return "";
   if (/^https?:/i.test(path)) return path;
