@@ -62,12 +62,7 @@ cd cove-cafe
 
 ### Configure Supabase
 
-Create a `.env` file:
 
-```env
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_anon_key
-```
 
 ### Deploy
 
